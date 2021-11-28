@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+.vs
+.vsconfig
+Library
+Temp
+Logs
+/Assembly-CSharp.csproj
+/Assembly-CSharp-Editor.csproj
+/testILRuntime1_6.sln
