@@ -2,6 +2,8 @@
 using System.Collections;
 using System.IO;
 using ILRuntime.Runtime.Enviorment;
+using ILRuntime.CLR.TypeSystem;
+using ILRuntime.CLR.Method;
 //下面这行为了取消使用WWW的警告，Unity2018以后推荐使用UnityWebRequest，处于兼容性考虑Demo依然使用WWW
 #pragma warning disable CS0618
 public class HelloWorld : MonoBehaviour
@@ -31,7 +33,7 @@ public class HelloWorld : MonoBehaviour
 #if UNITY_ANDROID
         WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/Hotfix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -44,7 +46,7 @@ public class HelloWorld : MonoBehaviour
 #if UNITY_ANDROID
         www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/Hotfix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -78,7 +80,17 @@ public class HelloWorld : MonoBehaviour
     void OnHotFixLoaded()
     {
         //HelloWorld，第一次方法调用
-        appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest", null, null);
+        //appdomain.Invoke("Hotfix.Class1", "StaticFunTest", null, null);
+        IType type = appdomain.LoadedTypes["Hotfix.Class1"];
+        object obj = ((ILType)type).Instantiate();
+        IMethod method = type.GetMethod("Test", 0);
+        using (var ctx = appdomain.BeginInvoke(method))
+        {
+            ctx.PushObject(obj);
+            ctx.Invoke();
+            int id = ctx.ReadInteger();
+            Debug.Log("!! Hotfix.InstanceClass.ID = " + id);
+        }
 
     }
 
