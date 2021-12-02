@@ -21,6 +21,18 @@ MonoBehaviour:
     m_Address: remote_non_static
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: b392f4f41e966844c9ba37a33bee0ca3
+    m_Address: Assets/Materials/testbytes.txt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a9e7ff72044cded479e7f5da07d1800b
+    m_Address: Assets/Materials/MyHotFix_dll_res.bytes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e0d131d7347c3d64986e3e7c677501ff
+    m_Address: Assets/Materials/MyHotFix_pdb_res.bytes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 15b46babd1f4f6045806dd12c6e62f4a, type: 2}
   m_SchemaSet:

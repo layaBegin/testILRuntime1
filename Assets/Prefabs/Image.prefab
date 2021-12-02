@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2024555558713582068}
   - component: {fileID: 2024555558713582070}
   - component: {fileID: 2024555558713582069}
+  - component: {fileID: 6874830398958925264}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -59,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9715729, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.90088654, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -76,6 +77,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6874830398958925264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024555558713582027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4526cb87b378d5d41bb39dd56ecb87f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text1: {fileID: 5733077559091611778}
 --- !u!1 &7053158867632095287
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,4 +168,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u66F4\u65B0\u9884\u5236\u4F531025"
+  m_Text: "\u66F4\u65B0\u9884\u5236\u4F531107"

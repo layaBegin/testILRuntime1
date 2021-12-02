@@ -1,7 +1,12 @@
+using ILRuntime.CLR.Method;
+using ILRuntime.CLR.TypeSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
@@ -13,6 +18,7 @@ public class CheckHopUpdate : MonoBehaviour
     public Button btnUpdateScene;
     public Button btnUpdateStatic;
     public Button btnUpdateNoStatic;
+    public Button btnUpdateDll;
     //Addressables.LoadContentCatalogAsync
 
     private List<object> _updateKeys  = new List<object>();
@@ -21,7 +27,14 @@ public class CheckHopUpdate : MonoBehaviour
     public string m_SceneAddressToLoad;
     public string remote_static;
     public string remote_non_static;
+    public string dllPath = "";
+    public string pbPath = "";
     private string str = "";
+
+
+    private static string DLLPath_File = Application.streamingAssetsPath + "/Addressable/ILRuntime/MyHotFix_dll_res.bytes";
+    private static string PBDPath_File = Application.streamingAssetsPath + "/Addressable/ILRuntime/MyHotFix_pdb_res.bytes";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +43,7 @@ public class CheckHopUpdate : MonoBehaviour
         //btnUpdateScene.onClick.AddListener(LoadGamePlayScene);
         //btnUpdateStatic.onClick.AddListener(RemoteStatic);
         btnUpdateNoStatic.onClick.AddListener(RemoteNonStatic);
+        btnUpdateDll.onClick.AddListener(onBtnLoadScriptsAsync);
     }
 
     ///加载场景
@@ -63,6 +77,35 @@ public class CheckHopUpdate : MonoBehaviour
         Debug.Log("===点击加载预制体");
         ShowLog("==点击加载预制体remote_non_static： "+ remote_non_static);
         Addressables.InstantiateAsync(remote_non_static, pos[1].transform.position, Quaternion.identity, pos[1]).Completed += onPfbCompleted;
+    }
+
+    public async void onBtnLoadScriptsAsync()
+    {
+       // ILRuntimeInstance.Instance.HotFixLoaded += HotFixInvoke;
+
+        await setAppDomainAsync();
+        //setAppDomainAsyncLocal();
+
+
+        //StartCoroutine(ILRuntimeInstance.Instance.LoadHotFixAssembly());
+
+    }
+
+    public void HotFixInvoke()
+    {
+        //HelloWorld，第一次方法调用
+        //appdomain.Invoke("Hotfix.Class1", "StaticFunTest", null, null);
+        IType type = ILRuntimeInstance.Instance.appdomain.LoadedTypes["MyHotFix.TestHotFix"];
+        object obj = ((ILType)type).Instantiate();
+        IMethod method = type.GetMethod("test2", 0);
+        using (var ctx = ILRuntimeInstance.Instance.appdomain.BeginInvoke(method)) //using 用法，离开了这个程序集就会被释放
+        {
+            ctx.PushObject(obj);
+            ctx.Invoke();
+            string str = ctx.ReadObject<string>();
+            Debug.Log("!! Hotfix.InstanceClass.ID = "+ str);
+            ShowLog($"===打印：{str}");
+        }
     }
 
     private void onPfbCompleted(AsyncOperationHandle<GameObject> obj)
@@ -118,6 +161,7 @@ public class CheckHopUpdate : MonoBehaviour
                 ShowLog("==dont need update catalogs");
             }
         }
+       
         Addressables.Release(handle);
     }
     /// <summary>
@@ -168,4 +212,75 @@ public class CheckHopUpdate : MonoBehaviour
         //CtrlLoadSlider();
     }
 
+
+
+    //本地测试DLL bytes 文件
+    public void setAppDomainAsyncLocal()
+    {
+        byte[] dll = LoadFile(dllPath);
+        byte[] pdb = LoadFile(pbPath);
+        MemoryStream fs = new MemoryStream(dll);
+        MemoryStream p = new MemoryStream(pdb);
+        try
+        {
+            ILRuntimeInstance.Instance.Appdomain.LoadAssembly(fs, p, new ILRuntime.Mono.Cecil.Pdb.PdbReaderProvider());
+        }
+        catch
+        {
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+        }
+        ILRuntimeInstance.Instance.InitializeILRuntime();
+        HotFixInvoke();
+    }
+
+    //从热更中加载DLL 文件
+    public async Task setAppDomainAsync()
+    {
+
+        byte[] dll = await LoadFile_Addressables(dllPath);
+        byte[] pdb = await LoadFile_Addressables(pbPath);
+        MemoryStream fs = new MemoryStream(dll);
+        MemoryStream p = new MemoryStream(pdb);
+        try
+        {
+            ILRuntimeInstance.Instance.Appdomain.LoadAssembly(fs, p, new ILRuntime.Mono.Cecil.Pdb.PdbReaderProvider());
+        }
+        catch
+        {
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+        }
+        ILRuntimeInstance.Instance.InitializeILRuntime();
+        HotFixInvoke();
+    }
+
+    //加载dll bytes文件
+    private static async Task<byte[]> LoadFile_WebRequest(string path)
+    {
+        var request = UnityWebRequest.Get(path); 
+        request.SendWebRequest();
+        while (!request.isDone)
+            await Task.Delay(200);
+        if (!string.IsNullOrEmpty(request.error))
+            Debug.LogError(request.error);
+        byte[] bytes = request.downloadHandler.data;
+        //销毁请求对象
+        request.Dispose();
+
+        return bytes;
+    }
+
+
+    //加载 dll bytes文件
+    private static byte[] LoadFile(string path)
+    {
+        Debug.Log(path);
+        return System.IO.File.ReadAllBytes(path);
+    }
+    private static async Task<byte[]> LoadFile_Addressables(string path)
+    {
+        Debug.Log(path);
+        var text = await Addressables.LoadAssetAsync<TextAsset>(path).Task;
+
+        return text.bytes;
+    }
 }

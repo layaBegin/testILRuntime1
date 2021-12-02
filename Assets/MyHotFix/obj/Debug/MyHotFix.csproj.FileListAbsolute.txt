@@ -1,0 +1,6 @@
+D:\UnityProject\testILRuntime1_6\Assets\StreamingAssets\Addressable\ILRuntime\MyHotFix.dll
+D:\UnityProject\testILRuntime1_6\Assets\StreamingAssets\Addressable\ILRuntime\MyHotFix.pdb
+D:\UnityProject\testILRuntime1_6\Assets\MyHotFix\obj\Debug\MyHotFix.csproj.AssemblyReference.cache
+D:\UnityProject\testILRuntime1_6\Assets\MyHotFix\obj\Debug\MyHotFix.csproj.CoreCompileInputs.cache
+D:\UnityProject\testILRuntime1_6\Assets\MyHotFix\obj\Debug\MyHotFix.dll
+D:\UnityProject\testILRuntime1_6\Assets\MyHotFix\obj\Debug\MyHotFix.pdb

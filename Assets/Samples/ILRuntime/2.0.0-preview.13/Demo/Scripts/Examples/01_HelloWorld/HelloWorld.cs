@@ -81,7 +81,7 @@ public class HelloWorld : MonoBehaviour
     {
         //HelloWorld，第一次方法调用
         //appdomain.Invoke("Hotfix.Class1", "StaticFunTest", null, null);
-        IType type = appdomain.LoadedTypes["Hotfix.Class1"];
+        IType type = appdomain.LoadedTypes["HotFix_Project.InstanceClass"];
         object obj = ((ILType)type).Instantiate();
         IMethod method = type.GetMethod("Test", 0);
         using (var ctx = appdomain.BeginInvoke(method))
